@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>結婚式受付QRスキャン</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 30px;
+      background-color: #f7f7f7;
+    }
+    #reader {
+      width: 300px;
+      margin: 0 auto;
+    }
+    #guestInfo {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .info {
+      font-size: 1.4em;
+      margin: 10px 0;
+    }
+    #backButton {
+      margin-top: 15px;
+      padding: 8px 15px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>受付QRスキャン</h1>
+
+  <div id="reader"></div>
+
+  <div id="guestInfo">
+    <div class="info" id="guestName"></div>
+    <div class="info" id="guestRelation"></div>
+    <div class="info" id="guestGift"></div>
+    <button id="backButton">スキャンに戻る</button>
+  </div>
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/【ここにGASのWebアプリURL】/exec';
+
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
+
+    function onScanSuccess(decodedText, decodedResult) {
+      html5QrcodeScanner.clear();
+
+      fetch(`${GAS_URL}?id=${encodeURIComponent(decodedText)}`)
+        .then(response => response.json())
+        .then(data => {
+          if(data.status === "OK") {
+            document.getElementById("guestName").textContent = `氏名：${data.name}`;
+            document.getElementById("guestRelation").textContent = `関係性：${data.relation}`;
+            document.getElementById("guestGift").textContent = `ご祝儀：${data.giftStatus}`;
+
+            document.getElementById("guestInfo").style.display = "block";
+            document.getElementById("reader").style.display = "none";
+
+            setTimeout(() => restartScanner(), 5000);
+          } else {
+            alert(`エラー: ${data.message}`);
+            restartScanner();
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert("通信エラーが発生しました");
+          restartScanner();
+        });
+    }
+
+    function restartScanner(){
+      document.getElementById("guestInfo").style.display = "none";
+      document.getElementById("reader").style.display = "block";
+      html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    document.getElementById("backButton").addEventListener("click", restartScanner);
+
+    html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
