@@ -96,9 +96,9 @@
             document.getElementById("guestInfo").innerHTML = `
               <div class="info">⏰ 受付時間: ${data.timestamp}</div>
               <div class="info">🎫 ID: ${data.id}</div>
-              <div class="info">👤 氏名: ${data.name}</div>
-              <div class="info">🤝 関係性: ${data.relation}</div>
-              <div class="info">💌 ご祝儀: ${data.giftStatus}</div>
+              <div class="info">👤 ${data.name}</div>
+              <div class="info">🤝 ${data.relation}</div>
+              <div class="info">💌 ${data.giftStatus}</div>
               ${noteInfo}
               <button id="backButton">スキャンに戻る</button>
             `;
