@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang=\"ja\">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
   <title>結婚式受付QRスキャン</title>
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src=\"https://unpkg.com/html5-qrcode\"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,9 +23,9 @@
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      font-size: 1.5em;
     }
     .info {
-      font-size: 1.4em;
       margin: 10px 0;
     }
     #backButton {
@@ -39,19 +39,14 @@
 <body>
   <h1>受付QRスキャン</h1>
 
-  <div id="reader"></div>
+  <div id=\"reader\"></div>
 
-  <div id="guestInfo">
-    <div class="info" id="guestName"></div>
-    <div class="info" id="guestRelation"></div>
-    <div class="info" id="guestGift"></div>
-    <button id="backButton">スキャンに戻る</button>
-  </div>
+  <div id=\"guestInfo\"></div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/【ここにGASのWebアプリURL】/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzCZfzVkw6XqYOUJ-A2JsRbD9_wkHIlw08b-aoVFOG-WIwlCci5zOFq0DrXr8fQUyD8Vw/exec';
 
-    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
+    const html5QrcodeScanner = new Html5QrcodeScanner(\"reader\", { fps: 10, qrbox: 250 }, false);
 
     function onScanSuccess(decodedText, decodedResult) {
       html5QrcodeScanner.clear();
@@ -59,13 +54,21 @@
       fetch(`${GAS_URL}?id=${encodeURIComponent(decodedText)}`)
         .then(response => response.json())
         .then(data => {
-          if(data.status === "OK") {
-            document.getElementById("guestName").textContent = `氏名：${data.name}`;
-            document.getElementById("guestRelation").textContent = `関係性：${data.relation}`;
-            document.getElementById("guestGift").textContent = `ご祝儀：${data.giftStatus}`;
+          if(data.status === \"OK\") {
+            document.getElementById(\"guestInfo\").innerHTML = `
+              <div class=\"info\">ID: ${data.id}</div>
+              <div class=\"info\">氏名: ${data.name}</div>
+              <div class=\"info\">関係性: ${data.relation}</div>
+              <div class=\"info\">受付時刻: ${data.timestamp}</div>
+              <div class=\"info\">ご祝儀受取状況: ${data.giftStatus}</div>
+              <div class=\"info\">備考: ${data.note}</div>
+              <button id=\"backButton\">スキャンに戻る</button>
+            `;
 
-            document.getElementById("guestInfo").style.display = "block";
-            document.getElementById("reader").style.display = "none";
+            document.getElementById(\"guestInfo\").style.display = \"block\";
+            document.getElementById(\"reader\").style.display = \"none\";
+
+            document.getElementById(\"backButton\").addEventListener(\"click\", restartScanner);
 
             setTimeout(() => restartScanner(), 5000);
           } else {
@@ -75,18 +78,16 @@
         })
         .catch(err => {
           console.error(err);
-          alert("通信エラーが発生しました");
+          alert(\"通信エラーが発生しました\");
           restartScanner();
         });
     }
 
     function restartScanner(){
-      document.getElementById("guestInfo").style.display = "none";
-      document.getElementById("reader").style.display = "block";
+      document.getElementById(\"guestInfo\").style.display = \"none\";
+      document.getElementById(\"reader\").style.display = \"block\";
       html5QrcodeScanner.render(onScanSuccess);
     }
-
-    document.getElementById("backButton").addEventListener("click", restartScanner);
 
     html5QrcodeScanner.render(onScanSuccess);
   </script>
