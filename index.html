@@ -91,8 +91,6 @@
         .then(response => response.json())
         .then(data => {
           if (data.status === "OK") {
-            let noteInfo = data.note ? `<div class="info">📝 備考: ${data.note}</div>` : '';
-
             document.getElementById("guestInfo").innerHTML = `
               <div class="info">⏰ ${data.timestamp}</div>
               <div class="info">🎫 ID: ${data.id}</div>
@@ -100,7 +98,7 @@
               <div class="info">🤝 ${data.relation}</div>
               <div class="info">💴 ${data.giftStatus}</div>
               <div class="info">🪑 ${data.seat}</div>
-              ${noteInfo}
+              <div class="info">📝 備考: ${data.note}</div>
               <button id="backButton">スキャンに戻る</button>
             `;
 
