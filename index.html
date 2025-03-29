@@ -70,6 +70,12 @@
     #backButton:hover {
       background-color: #2c3e50;
     }
+
+    /* 追加: ボタンを一回り大きくする */
+    .html5-qrcode-element button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+    }
   </style>
 </head>
 <body>
@@ -127,7 +133,20 @@
     }
 
     window.onload = function() {
-      html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }, false);
+      // デフォルトで背面カメラ & ファイル選択を無効化
+      html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", 
+        {
+          fps: 10,
+          qrbox: 250,
+          // 背面カメラをデフォルトに
+          rememberLastUsedCamera: true,
+          defaultCameraIdOrConfig: { facingMode: "environment" },
+          // カメラのみ（画像ファイル選択タブを非表示）
+          supportedScanTypes: [ Html5QrcodeScanType.SCAN_TYPE_CAMERA ]
+        },
+        false
+      );
       html5QrcodeScanner.render(onScanSuccess);
     };
   </script>
